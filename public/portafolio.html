@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portafolio Público - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="portfolio-section">
+      <div class="container">
+        <h2 class="section-title">Obras públicas destacadas</h2>
+        <p class="portfolio-subtext">
+          Explorá creaciones artísticas de nuestra comunidad en modo vitrina.
+          Inspirate y descubrí talento sin necesidad de registrarte.
+        </p>
+        <div id="galeriaPublica" class="galeria-grid">
+          <!-- Obras cargadas dinámicamente -->
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+    <div id="lightbox" class="lightbox" style="display: none">
+      <span id="cerrarLightbox" class="cerrar-lightbox">×</span>
+      <img id="lightboxImagen" src="" alt="" />
+      <p id="lightboxTitulo"></p>
+      <p id="lightboxDescripcion"></p>
+    </div>
+
+    <script src="js/portafolio.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

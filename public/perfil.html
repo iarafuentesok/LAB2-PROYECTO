@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Perfil de Usuario - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="perfil-section">
+      <div class="perfil-contenedor container">
+        <section class="perfil-header">
+          <img
+            id="imagenPerfil"
+            class="perfil-img"
+            src="/assets/default-profile.png"
+            alt="Foto de perfil"
+          />
+          <div>
+            <h2 id="nombrePerfil"></h2>
+            <p id="intereses"></p>
+            <p id="antecedentes"></p>
+
+            <div id="accionesPropias" style="display: none">
+              <a href="editar-perfil.html" class="btn">Editar perfil</a>
+              <button id="crearAlbumBtn" class="btn">Crear álbum</button>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Imágenes destacadas</h3>
+          <div id="galeriaObras" class="galeria-grid"></div>
+        </section>
+
+        <section>
+          <h3>Álbumes</h3>
+          <div id="listaAlbumes" class="albumes-grid"></div>
+        </section>
+      </div>
+
+      <div id="lightbox" class="lightbox" style="display: none">
+        <span id="cerrarLightbox" class="cerrar-lightbox">×</span>
+        <img id="lightboxImagen" src="" alt="" />
+        <p id="lightboxTitulo"></p>
+        <p id="lightboxDescripcion"></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/perfil.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

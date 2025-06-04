@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis Álbumes - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="albumes-section">
+      <div class="container">
+        <!-- Info de usuario -->
+        <section>
+          <p id="infoUsuarioAlbumes" class="info-usuario"></p>
+        </section>
+
+        <!-- Mensajes de éxito -->
+        <section>
+          <p id="mensajeAlbum" class="mensaje-temporal"></p>
+          <p id="mensajeImagen" class="mensaje-temporal"></p>
+        </section>
+
+        <!-- Crear nuevo álbum -->
+        <section class="crear-album">
+          <h2 class="section-title">Crear nuevo álbum</h2>
+          <form id="crearAlbumForm" class="album-form">
+            <label for="tituloAlbum">Título del álbum:</label>
+            <input type="text" id="tituloAlbum" required />
+            <button type="submit" class="btn primary">Crear álbum</button>
+          </form>
+        </section>
+
+        <!-- Lista de álbumes -->
+        <section>
+          <h2 class="section-title">Mis álbumes</h2>
+          <div id="listaAlbumes" class="albumes-grid">
+            <!-- Renderizado dinámico con visibilidad por imagen -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/albumes.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eventos - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="eventos-section">
+      <div class="container">
+        <section class="crear-evento">
+          <h2 class="section-title">Crear nuevo evento</h2>
+          <form id="eventoForm" class="evento-form">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" required />
+
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" rows="4" required></textarea>
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" required />
+
+            <button type="submit" class="btn primary">Publicar evento</button>
+          </form>
+        </section>
+
+        <section>
+          <h2 class="section-title">Próximos eventos</h2>
+          <div id="listaEventos" class="eventos-grid">
+            <!-- Render desde JS -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/eventos.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

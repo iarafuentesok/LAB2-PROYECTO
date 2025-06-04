@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar perfil - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <div>
+          <h1>Artesanos<span class="dot">.com</span></h1>
+          <p id="saludoUsuario"></p>
+        </div>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="perfil-section">
+      <div class="perfil-contenedor container">
+        <div class="perfil-header">
+          <img
+            id="imagenPerfil"
+            src="assets/default-profile.png"
+            alt="Imagen de perfil"
+            class="perfil-img"
+          />
+        </div>
+
+        <form id="perfilForm" class="perfil-form">
+          <h2 class="section-title">Información personal</h2>
+
+          <label for="nombre">Nombre completo:</label>
+          <input type="text" id="nombre" name="nombre" required />
+
+          <label for="intereses">Intereses:</label>
+          <textarea id="intereses" name="intereses" rows="3"></textarea>
+
+          <label for="antecedentes">Antecedentes:</label>
+          <textarea id="antecedentes" name="antecedentes" rows="3"></textarea>
+
+          <label for="imagen">Cambiar imagen de perfil:</label>
+          <input type="file" id="imagen" name="imagen" accept="image/*" />
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="modoVitrina" />
+            Mostrar mis obras en el portafolio público
+          </label>
+
+          <button type="submit" class="btn primary">Guardar cambios</button>
+        </form>
+
+        <form id="passwordForm" class="perfil-form">
+          <h2 class="section-title">Cambiar contraseña</h2>
+
+          <label for="password">Nueva contraseña:</label>
+          <input type="password" id="password" name="password" required />
+
+          <button type="submit" class="btn">Actualizar contraseña</button>
+        </form>
+
+        <p id="perfilMsg" class="perfil-mensaje"></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/editar-perfil.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

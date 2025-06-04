@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="feed-section">
+      <div class="container">
+        <h2 class="section-title">Publicaciones de tus contactos</h2>
+        <div id="feed" class="feed-grid">
+          <!-- Render desde JS -->
+        </div>
+      </div>
+    </main>
+    <div id="lightbox" class="lightbox" style="display: none">
+      <span id="cerrarLightbox" class="cerrar-lightbox">×</span>
+      <img id="lightboxImagen" src="" alt="" />
+      <p id="lightboxTitulo"></p>
+      <p id="lightboxDescripcion"></p>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/inicio.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

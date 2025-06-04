@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="form-section">
+      <div class="form-container container">
+        <h2 class="section-title">Iniciar Sesión</h2>
+
+        <form id="loginForm">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+
+          <label for="password">Contraseña:</label>
+          <input type="password" id="password" name="password" required />
+
+          <button type="submit" class="btn primary">Ingresar</button>
+        </form>
+
+        <p id="loginError" class="login-error"></p>
+
+        <p style="margin-top: 2rem">
+          ¿Aún no tenés una cuenta?
+          <a style="color: blue" href="registro.html">Registrate</a>
+        </p>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/login.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

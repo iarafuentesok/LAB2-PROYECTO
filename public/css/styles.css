@@ -1,0 +1,742 @@
+/* ========== VARIABLES ========== */
+:root {
+  --font-primary: 'Poppins', sans-serif;
+  --color-bg: #f9f7f6;
+  --color-dark: #2f2f2f;
+  --color-light: #ffffff;
+  --color-accent: #e67e22;
+  --color-accent-dark: #d35400;
+  --color-text: #333;
+  --color-subtext: #555;
+  --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --shadow-header: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --transition: all 0.3s ease;
+}
+
+/* ========== RESET & BASE ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ========== UTILIDADES ========== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* ========== HEADER ========== */
+.main-header {
+  background-color: var(--color-light);
+  box-shadow: var(--shadow-header);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.main-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 0;
+}
+
+.main-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+.main-header .dot {
+  color: var(--color-accent);
+}
+
+nav a {
+  margin-left: 1.5rem;
+  font-weight: 500;
+  color: var(--color-subtext);
+}
+
+nav a:hover {
+  color: var(--color-accent);
+}
+
+nav a.activo {
+  font-weight: bold;
+  text-decoration: underline;
+  color: #000;
+}
+/* ========== HERO SECTION ========== */
+.hero-section {
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  padding: 6rem 2rem 5rem;
+  text-align: center;
+  color: var(--color-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  color: var(--color-subtext);
+}
+
+.hero-content .btn {
+  font-size: 1.1rem;
+}
+
+/* ========== BOTONES ========== */
+.btn {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn.primary {
+  background-color: var(--color-accent);
+  color: var(--color-light);
+  box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.btn.primary:hover {
+  background-color: var(--color-accent-dark);
+  box-shadow: 0 6px 20px rgba(211, 84, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ========== FOOTER ========== */
+footer {
+  background-color: var(--color-dark);
+  padding: 1.5rem;
+  color: #f0f0f0;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+
+
+/* ==== Features Section ==== */
+.features-section {
+  background-color: var(--color-light);
+  padding: 5rem 2rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.feature-box {
+  background-color: #fffdf8;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
+  text-align: left;
+}
+
+.feature-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.feature-box h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-accent);
+}
+
+.feature-box p {
+  font-size: 0.95rem;
+  color: var(--color-subtext);
+}
+
+/* ==== Sección de formulario ==== */
+.form-section {
+  background-color: #fffdf8;
+  padding: 5rem 2rem;
+  flex: 1;
+}
+
+.form-container {
+  max-width: 500px;
+  background-color: var(--color-light);
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ==== Grupos de input ==== */
+form label {
+  display: block;
+  font-weight: 600;
+  margin: 1rem 0 0.4rem;
+  color: var(--color-dark);
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="file"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: var(--transition);
+  background-color: #fff;
+}
+
+form input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+  outline: none;
+}
+
+/* ==== Botón de envío ==== */
+form button[type="submit"] {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* ==== Mensaje de registro ==== */
+.registro-mensaje {
+  margin-top: 1.5rem;
+  color: green;
+  font-weight: 600;
+  min-height: 1.5rem;
+}
+
+/* ==== Mensaje de error opcional ==== */
+.registro-error {
+  color: #d93025;
+}
+
+/* ==== Login específico ==== */
+.login-error {
+  margin-top: 1.5rem;
+  color: red;
+  font-weight: 600;
+  min-height: 1.5rem;
+}
+/* ==== Sección de Portafolio ==== */
+.portfolio-section {
+  background: #f9f7f6;
+  padding: 5rem 2rem;
+}
+
+.portfolio-subtext {
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  text-align: center;
+  color: var(--color-subtext);
+  font-size: 1.05rem;
+}
+
+/* ==== Galería profesional ==== */
+.galeria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.5rem;
+}
+
+/* ==== Tarjeta de obra ==== */
+.obra {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.obra:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.1);
+}
+
+.obra img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.obra-content {
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.obra-content h3 {
+  font-size: 1.2rem;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+}
+
+.obra-content p {
+  font-size: 0.95rem;
+  color: var(--color-subtext);
+}
+/* ==== Sección Perfil ==== */
+.perfil-section {
+  background-color: #fffdf8;
+  padding: 5rem 2rem;
+}
+
+.perfil-contenedor {
+  max-width: 700px;
+  margin: auto;
+  background-color: #fff;
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ==== Imagen de perfil ==== */
+.perfil-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+
+.perfil-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--color-accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ==== Formulario perfil ==== */
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.perfil-form label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--color-dark);
+}
+
+.perfil-form input[type="text"],
+.perfil-form input[type="password"],
+.perfil-form input[type="file"],
+.perfil-form textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: var(--transition);
+  background-color: #fff;
+  resize: vertical;
+}
+
+.perfil-form input:focus,
+.perfil-form textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+  outline: none;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* ==== Mensaje de perfil ==== */
+.perfil-mensaje {
+  margin-top: 2rem;
+  color: green;
+  font-weight: 600;
+  min-height: 1.5rem;
+}
+
+/* ==== Sección Álbumes ==== */
+.albumes-section {
+  background-color: #fffdf8;
+  padding: 5rem 2rem;
+}
+
+.info-usuario {
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: var(--color-dark);
+  text-align: center;
+}
+
+/* ==== Formulario de nuevo álbum ==== */
+.album-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto 3rem;
+}
+
+.album-form input[type="text"] {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.album-form input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+  outline: none;
+}
+
+/* ==== Grilla de álbumes ==== */
+.albumes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* ==== Tarjeta de álbum ==== */
+.album-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.album-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.album-card h3 {
+  color: var(--color-accent);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.album-card p {
+  font-size: 0.95rem;
+  color: var(--color-subtext);
+}
+/* ==== Sección Eventos ==== */
+.eventos-section {
+  background-color: #fffdf8;
+  padding: 5rem 2rem;
+}
+
+.evento-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 500px;
+  margin: 0 auto 3rem;
+}
+
+.evento-form input[type="text"],
+.evento-form input[type="date"],
+.evento-form textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: var(--transition);
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.evento-form input:focus,
+.evento-form textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+  outline: none;
+}
+
+/* ==== Grilla de eventos ==== */
+.eventos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+/* ==== Tarjeta de evento ==== */
+.evento-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.evento-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.evento-card h3 {
+  color: var(--color-accent);
+  font-size: 1.3rem;
+}
+
+.evento-card p {
+  font-size: 0.95rem;
+  color: var(--color-subtext);
+}
+
+.evento-card .fecha {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-dark);
+}
+/* ==== Sección Amigos ==== */
+.amigos-section {
+  background-color: #fffdf8;
+  padding: 5rem 2rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-bar input[type="text"] {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.tarjetas-lista {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-top: 1rem;
+}
+
+/* ==== Tarjeta de usuario ==== */
+.tarjetas-lista li {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.tarjetas-lista li button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: var(--color-accent);
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tarjetas-lista li button:hover {
+  background-color: var(--color-accent-dark);
+}
+
+/* ==== Sección Feed de inicio ==== */
+.feed-section {
+  background-color: #fffdf8;
+  padding: 5rem 2rem;
+}
+
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+/* ==== Tarjeta de publicación ==== */
+.obra-publica {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.obra-publica img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+.obra-publica p {
+  margin: 0.7rem 1rem;
+  font-size: 0.95rem;
+  color: var(--color-subtext);
+}
+
+.obra-publica p strong {
+  color: var(--color-accent);
+  font-size: 1rem;
+}
+
+.obra-publica a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.obra-publica a:hover {
+  text-decoration: underline;
+}
+.fecha-publicacion {
+  font-size: 0.85rem;
+  color: var(--color-subtext);
+  margin-bottom: 1rem;
+}
+
+
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.lightbox img {
+  max-width: 90%;
+  max-height: 70vh;
+  border-radius: 10px;
+}
+
+.lightbox p {
+  color: white;
+  margin: 0.5rem;
+  text-align: center;
+}
+
+.cerrar-lightbox {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+}
+
+
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 992px) {
+  .hero-content h2 {
+    font-size: 2.4rem;
+  }
+
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-header .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav {
+    margin-top: 1rem;
+  }
+
+  nav a {
+    display: block;
+    margin: 0.5rem 0;
+  }
+
+  .hero-content h2 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+  }
+}

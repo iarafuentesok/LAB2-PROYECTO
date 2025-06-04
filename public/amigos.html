@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amigos - Artesanos.com</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <h1>Artesanos<span class="dot">.com</span></h1>
+        <nav id="navPublico"></nav>
+      </div>
+    </header>
+
+    <main class="amigos-section">
+      <div class="container">
+        <section class="buscar-usuarios">
+          <h2 class="section-title">Buscar usuarios</h2>
+          <div class="search-bar">
+            <input type="text" id="busqueda" placeholder="Nombre o apellido" />
+            <button id="buscarBtn" class="btn">Buscar</button>
+          </div>
+          <ul id="resultadosBusqueda" class="tarjetas-lista"></ul>
+        </section>
+
+        <section>
+          <h2 class="section-title">Solicitudes recibidas</h2>
+          <ul id="solicitudesRecibidas" class="tarjetas-lista"></ul>
+        </section>
+
+        <section>
+          <h2 class="section-title">Mis amigos</h2>
+          <ul id="listaAmigos" class="tarjetas-lista"></ul>
+        </section>
+        <section>
+          <h2>Imágenes compartidas por tus amigos</h2>
+          <div id="imagenesAmigos" class="galeria-grid"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Artesanos.com – Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/amigos.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>
