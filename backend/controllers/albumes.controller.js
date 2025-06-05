@@ -1,18 +1,4 @@
 import { db } from "../db.js";
-import multer from "multer";
-import path from "path";
-
-// Configuración de multer para guardar imágenes en /public/uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads");
-  },
-  filename: (req, file, cb) => {
-    const nombreFinal = Date.now() + "-" + file.originalname;
-    cb(null, nombreFinal);
-  },
-});
-export const upload = multer({ storage });
 
 // Obtener álbumes con imágenes
 export const obtenerAlbumesPorUsuario = async (req, res) => {
@@ -27,17 +13,22 @@ export const obtenerAlbumesPorUsuario = async (req, res) => {
     const albumesConImagenes = await Promise.all(
       albumes.map(async (album) => {
         const [imagenes] = await db.query(
-          "SELECT * FROM imagenes WHERE id_album = ?",
+          "SELECT id, id_album, id_usuario, url_archivo, descripcion, visibilidad, fecha_subida FROM imagenes WHERE id_album = ?",
           [album.id]
         );
 
-        const convertidas = imagenes.map((img) => ({
-          ...img,
-          destinatarios: img.destinatarios ? JSON.parse(img.destinatarios) : [],
-          seguidores: img.seguidores ? JSON.parse(img.seguidores) : [],
-        }));
+        const withRecipients = await Promise.all(
+          imagenes.map(async (img) => {
+            const [rows] = await db.query(
+              "SELECT id_usuario FROM imagenes_compartidas WHERE id_imagen = ?",
+              [img.id]
+            );
+            const destinatarios = rows.map((r) => r.id_usuario);
+            return { ...img, destinatarios };
+          })
+        );
 
-        return { ...album, imagenes: convertidas };
+        return { ...album, imagenes: withRecipients };
       })
     );
 
@@ -66,9 +57,13 @@ export const crearAlbum = async (req, res) => {
 // Subir imagen a álbum
 export const subirImagen = async (req, res) => {
   try {
-    const { id_album } = req.params;
-    const { descripcion, visibilidad, destinatarios, seguidores, id_usuario } =
-      req.body;
+    const { albumId } = req.params;
+    const {
+      descripcion,
+      visibilidad,
+      destinatarios = [],
+      id_usuario,
+    } = req.body;
 
     const archivo = req.file;
     if (!archivo) {
@@ -77,20 +72,21 @@ export const subirImagen = async (req, res) => {
 
     const url_archivo = `/uploads/${archivo.filename}`;
 
-    await db.query(
-      `INSERT INTO imagenes 
-        (id_album, url_archivo, descripcion, visibilidad, destinatarios, seguidores, id_usuario)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id_album,
-        url_archivo,
-        descripcion || "",
-        visibilidad,
-        destinatarios || "[]",
-        seguidores || "[]",
-        id_usuario,
-      ]
+    const [result] = await db.query(
+      `INSERT INTO imagenes (id_album, id_usuario, url_archivo, descripcion, visibilidad)
+       VALUES (?, ?, ?, ?, ?)`,
+      [albumId, id_usuario, url_archivo, descripcion || "", visibilidad]
     );
+
+    if (visibilidad === "compartida" && Array.isArray(destinatarios)) {
+      const values = destinatarios.map((uid) => [result.insertId, uid]);
+      if (values.length > 0) {
+        await db.query(
+          "INSERT INTO imagenes_compartidas (id_imagen, id_usuario) VALUES ?",
+          [values]
+        );
+      }
+    }
 
     res
       .status(201)
