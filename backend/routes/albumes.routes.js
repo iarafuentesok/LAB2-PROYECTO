@@ -11,6 +11,10 @@ const router = express.Router();
 
 router.get("/usuario/:id", obtenerAlbumesPorUsuario);
 router.post("/crear", crearAlbum);
-router.post("/imagen/:albumId", upload.single("imagen"), subirImagen); // 👈 Nueva ruta
+router.post(
+  "/imagen/:id_album",
+  upload.single("imagen"),
+  subirImagen
+); // Ruta para subir una imagen a un álbum
 
 export default router;
