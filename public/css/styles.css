@@ -605,6 +605,10 @@ form button[type="submit"] {
   background-color: var(--color-accent-dark);
 }
 
+.tarjetas-lista li.no-leido {
+  background-color: #fff3cd;
+}
+
 /* ==== Sección Feed de inicio ==== */
 .feed-section {
   background-color: #fffdf8;

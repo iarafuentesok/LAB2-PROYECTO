@@ -1,5 +1,7 @@
 import { db } from '../db.js';
+import { getIO } from '../socket.js';
 
+// Enviar solicitud de amistad
 export const enviarSolicitud = async (req, res) => {
   try {
     const { id_remitente, id_destinatario } = req.body;
@@ -12,10 +14,18 @@ export const enviarSolicitud = async (req, res) => {
       [id_remitente, id_destinatario]
     );
 
-    await db.query(
+    const [result] = await db.query(
       "INSERT INTO notificaciones (id_usuario, tipo, mensaje) VALUES (?, 'amistad', ?)",
       [id_destinatario, 'Nueva solicitud de amistad']
     );
+
+    // Notificación en tiempo real al destinatario
+    getIO().to(String(id_destinatario)).emit('notificacion', {
+      id: result.insertId,
+      tipo: 'amistad',
+      mensaje: 'Nueva solicitud de amistad',
+      leido: 0,
+    });
 
     res.status(201).json({ mensaje: 'Solicitud enviada' });
   } catch (error) {
@@ -24,6 +34,7 @@ export const enviarSolicitud = async (req, res) => {
   }
 };
 
+// Responder solicitud de amistad (aceptar o rechazar)
 export const responderSolicitud = async (req, res) => {
   try {
     const id_solicitud = req.params.idSolicitud;
@@ -47,8 +58,11 @@ export const responderSolicitud = async (req, res) => {
     if (acepta) {
       const id1 = Math.min(solicitud.id_remitente, solicitud.id_destinatario);
       const id2 = Math.max(solicitud.id_remitente, solicitud.id_destinatario);
+
+      // Registrar la amistad
       await db.query('INSERT INTO amistades (id_usuario, id_amigo) VALUES (?, ?)', [id1, id2]);
 
+      // Crear álbum en el remitente con el nombre del destinatario
       const [userRows] = await db.query('SELECT nombre FROM usuarios WHERE id = ?', [
         solicitud.id_destinatario,
       ]);
@@ -64,10 +78,19 @@ export const responderSolicitud = async (req, res) => {
     const mensaje = acepta
       ? 'Tu solicitud de amistad fue aceptada'
       : 'Tu solicitud de amistad fue rechazada';
-    await db.query(
+
+    const [notifRes] = await db.query(
       "INSERT INTO notificaciones (id_usuario, tipo, mensaje) VALUES (?, 'amistad', ?)",
       [solicitud.id_remitente, mensaje]
     );
+
+    // Notificación en tiempo real al remitente
+    getIO().to(String(solicitud.id_remitente)).emit('notificacion', {
+      id: notifRes.insertId,
+      tipo: 'amistad',
+      mensaje,
+      leido: 0,
+    });
 
     res.json({ mensaje: 'Respuesta registrada' });
   } catch (error) {
@@ -76,6 +99,7 @@ export const responderSolicitud = async (req, res) => {
   }
 };
 
+// Consultar solicitudes pendientes de amistad
 export const solicitudesPendientes = async (req, res) => {
   try {
     const id_usuario = req.params.idUsuario;

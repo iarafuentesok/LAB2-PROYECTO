@@ -1,5 +1,7 @@
 import { db } from '../db.js';
+import { getIO } from '../socket.js';
 
+// Agregar comentario a una imagen
 export const agregarComentario = async (req, res) => {
   try {
     const id_imagen = req.params.idImagen;
@@ -15,14 +17,27 @@ export const agregarComentario = async (req, res) => {
       comentario,
     ]);
 
+    // Obtener propietario de la imagen para notificar
     const [rows] = await db.query('SELECT id_usuario FROM imagenes WHERE id = ?', [id_imagen]);
+
     if (rows.length) {
       const autor = rows[0].id_usuario;
       if (autor !== id_usuario) {
-        await db.query(
+        const [resNotif] = await db.query(
           "INSERT INTO notificaciones (id_usuario, tipo, mensaje, url) VALUES (?, 'comentario', ?, ?)",
           [autor, `Nuevo comentario en tu imagen`, `/imagen/${id_imagen}`]
         );
+
+        // Notificación en tiempo real
+        getIO()
+          .to(String(autor))
+          .emit('notificacion', {
+            id: resNotif.insertId,
+            tipo: 'comentario',
+            mensaje: `Nuevo comentario en tu imagen`,
+            url: `/imagen/${id_imagen}`,
+            leido: 0,
+          });
       }
     }
 
@@ -33,6 +48,7 @@ export const agregarComentario = async (req, res) => {
   }
 };
 
+// Obtener todos los comentarios de una imagen
 export const obtenerComentariosPorImagen = async (req, res) => {
   try {
     const id_imagen = req.params.idImagen;
