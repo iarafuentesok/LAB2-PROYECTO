@@ -18,7 +18,7 @@ import notificacionesRoutes from './routes/notificaciones.routes.js';
 import tagsRoutes from './routes/tags.routes.js';
 import eventosRoutes from './routes/eventos.routes.js';
 import reportesRoutes from './routes/reportes.routes.js';
-
+import busquedaRoutes from './routes/busqueda.routes.js';
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,7 +54,7 @@ app.use('/api/notificaciones', notificacionesRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/eventos', eventosRoutes);
 app.use('/api/reportes', reportesRoutes);
-
+app.use('/api/busqueda', busquedaRoutes);
 // 🔍 Ruta de prueba
 app.get('/', (req, res) => {
   res.send('Servidor funcionando 🎉');
@@ -74,6 +74,11 @@ app.use((req, res) => {
 // 🚀 Iniciar servidor con soporte WebSocket
 const PORT = process.env.PORT || 3000;
 console.log('Archivos estáticos servidos desde:', publicPath);
-httpServer.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
-});
+
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+  });
+}
+
+export { app, httpServer };

@@ -20,7 +20,7 @@ export const crearEvento = async (req, res) => {
     }
     await db.query(
       'INSERT INTO eventos (id_usuario, titulo, descripcion, fecha_evento, lugar) VALUES (?, ?, ?, ?, ?)',
-      [id_usuario, descripcion || '', titulo, fecha_evento, lugar || '']
+      [id_usuario, titulo, descripcion || '', fecha_evento, lugar || '']
     );
     res.status(201).json({ mensaje: 'Evento creado' });
   } catch (error) {
