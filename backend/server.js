@@ -15,6 +15,9 @@ import albumesRoutes from './routes/albumes.routes.js';
 import comentariosRoutes from './routes/comentarios.routes.js';
 import amistadRoutes from './routes/amistad.routes.js';
 import notificacionesRoutes from './routes/notificaciones.routes.js';
+import tagsRoutes from './routes/tags.routes.js';
+import eventosRoutes from './routes/eventos.routes.js';
+import reportesRoutes from './routes/reportes.routes.js';
 
 dotenv.config();
 
@@ -48,6 +51,9 @@ app.use('/api/albumes', albumesRoutes);
 app.use('/api/comentarios', comentariosRoutes);
 app.use('/api/amistad', amistadRoutes);
 app.use('/api/notificaciones', notificacionesRoutes);
+app.use('/api/tags', tagsRoutes);
+app.use('/api/eventos', eventosRoutes);
+app.use('/api/reportes', reportesRoutes);
 
 // 🔍 Ruta de prueba
 app.get('/', (req, res) => {
