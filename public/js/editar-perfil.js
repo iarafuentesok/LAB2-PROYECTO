@@ -1,78 +1,87 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("perfilForm");
-  const passwordForm = document.getElementById("passwordForm");
-  const imagenPerfil = document.getElementById("imagenPerfil");
-  const mensaje = document.getElementById("perfilMsg");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const saludo = document.getElementById("saludoUsuario");
-  const checkboxVitrina = document.getElementById("modoVitrina");
+document.addEventListener('DOMContentLoaded', async () => {
+  const form = document.getElementById('perfilForm');
+  const passwordForm = document.getElementById('passwordForm');
+  const imagenPerfil = document.getElementById('imagenPerfil');
+  const mensaje = document.getElementById('perfilMsg');
+  const saludo = document.getElementById('saludoUsuario');
+  const checkboxVitrina = document.getElementById('modoVitrina');
 
-  let usuario = JSON.parse(localStorage.getItem("usuarioTemporal"));
-
-  if (!localStorage.getItem("token") || !usuario) {
-    window.location.href = "login.html";
+  const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+  if (!usuario) {
+    window.location.href = 'login.html';
     return;
   }
 
-  // Mostrar saludo
-  saludo.textContent = `Hola, ${usuario.nombre}`;
+  try {
+    const res = await fetch(`/api/usuarios/${usuario.id}`);
+    const datos = await res.json();
+    saludo.textContent = `Hola, ${datos.nombre}`;
+    document.getElementById('nombre').value = datos.nombre;
+    document.getElementById('intereses').value = datos.intereses || '';
+    document.getElementById('antecedentes').value = datos.antecedentes || '';
+    imagenPerfil.src = datos.imagen_perfil || 'assets/default-profile.png';
+    checkboxVitrina.checked = datos.modo_vitrina === 1;
+  } catch (err) {
+    console.error('Error al cargar perfil', err);
+  }
 
-  // Precargar datos
-  document.getElementById("nombre").value = usuario.nombre;
-  document.getElementById("intereses").value = usuario.intereses || "";
-  document.getElementById("antecedentes").value = usuario.antecedentes || "";
-  imagenPerfil.src = usuario.imagen || "assets/default-profile.png";
-  checkboxVitrina.checked = usuario.modoVitrina || false;
-
-  // Guardar perfil
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    usuario.nombre = document.getElementById("nombre").value.trim();
-    usuario.intereses = document.getElementById("intereses").value.trim();
-    usuario.antecedentes = document.getElementById("antecedentes").value.trim();
-    usuario.modoVitrina = checkboxVitrina.checked;
-
-    const imagenInput = document.getElementById("imagen");
-    if (imagenInput.files.length > 0) {
-      const archivo = imagenInput.files[0];
-      const base64 = await convertirImagenABase64(archivo);
-      usuario.imagen = base64;
+    const formData = new FormData();
+    formData.append('nombre', document.getElementById('nombre').value.trim());
+    formData.append('intereses', document.getElementById('intereses').value.trim());
+    formData.append('antecedentes', document.getElementById('antecedentes').value.trim());
+    formData.append('modo_vitrina', checkboxVitrina.checked);
+    if (form.imagen.files.length > 0) {
+      formData.append('imagen', form.imagen.files[0]);
     }
 
-    localStorage.setItem("usuarioTemporal", JSON.stringify(usuario));
-    mensaje.style.color = "green";
-    mensaje.textContent = "Cambios guardados correctamente ✔️";
+    const resp = await fetch(`/api/usuarios/${usuario.id}`, {
+      method: 'PUT',
+      body: formData,
+    });
 
-    saludo.textContent = `Hola, ${usuario.nombre}`;
-    imagenPerfil.src = usuario.imagen || "assets/default-profile.png";
+    if (resp.ok) {
+      mensaje.style.color = 'green';
+      mensaje.textContent = 'Cambios guardados correctamente ✔️';
+      const updated = await resp.json().catch(() => null);
+      if (updated && updated.nombre) {
+        localStorage.setItem(
+          'usuarioActual',
+          JSON.stringify({ ...usuario, nombre: document.getElementById('nombre').value.trim() })
+        );
+      }
+    } else {
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'Error al actualizar perfil';
+    }
+
+    setTimeout(() => (mensaje.textContent = ''), 3000);
   });
 
-  passwordForm.addEventListener("submit", (e) => {
+  passwordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const nuevaPass = document.getElementById("password").value;
+    const nuevaPass = document.getElementById('password').value;
     if (nuevaPass.trim().length < 4) {
-      mensaje.style.color = "red";
-      mensaje.textContent = "La contraseña debe tener al menos 4 caracteres.";
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'La contraseña debe tener al menos 4 caracteres.';
       return;
     }
-    usuario.password = nuevaPass;
-    localStorage.setItem("usuarioTemporal", JSON.stringify(usuario));
-    mensaje.style.color = "green";
-    mensaje.textContent = "Contraseña actualizada ✔️";
-  });
 
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "login.html";
-  });
-
-  function convertirImagenABase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+    const resp = await fetch(`/api/usuarios/${usuario.id}/password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: nuevaPass }),
     });
-  }
+
+    if (resp.ok) {
+      mensaje.style.color = 'green';
+      mensaje.textContent = 'Contraseña actualizada ✔️';
+    } else {
+      mensaje.style.color = 'red';
+      mensaje.textContent = 'Error al actualizar contraseña';
+    }
+
+    setTimeout(() => (mensaje.textContent = ''), 3000);
+  });
 });

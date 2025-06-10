@@ -703,6 +703,18 @@ form button[type="submit"] {
   cursor: pointer;
 }
 
+/* ==== Badge de notificaciones ==== */
+.badge {
+  background-color: var(--color-accent);
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  vertical-align: top;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
 
 
 /* ========== RESPONSIVE ========== */

@@ -116,3 +116,20 @@ export const solicitudesPendientes = async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener solicitudes' });
   }
 };
+
+// Obtener lista de amigos de un usuario
+export const obtenerAmigos = async (req, res) => {
+  try {
+    const id_usuario = req.params.idUsuario;
+    const [rows] = await db.query(
+      `SELECT u.id, u.nombre
+       FROM amistades a
+       JOIN usuarios u ON (a.id_usuario = ? AND u.id = a.id_amigo) OR (a.id_amigo = ? AND u.id = a.id_usuario)`,
+      [id_usuario, id_usuario]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener amigos' });
+  }
+};

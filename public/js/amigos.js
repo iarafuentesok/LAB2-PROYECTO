@@ -1,75 +1,71 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const resultadosBusqueda = document.getElementById("resultadosBusqueda");
-  const solicitudesRecibidas = document.getElementById("solicitudesRecibidas");
-  const listaAmigos = document.getElementById("listaAmigos");
-  const logoutBtn = document.getElementById("logoutBtn");
+document.addEventListener('DOMContentLoaded', async () => {
+  const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+  if (!usuario) {
+    window.location.href = 'login.html';
+    return;
+  }
 
-  // Mocks
-  const usuariosSimulados = [
-    { id: 1, nombre: "Lucía Gómez" },
-    { id: 2, nombre: "Mauro Pérez" },
-    { id: 3, nombre: "Esteban Ruiz" },
-  ];
-  const solicitudesSimuladas = [{ id: 1, nombre: "Lucía Gómez" }];
-  const amigosSimulados = [{ id: 2, nombre: "Mauro Pérez" }];
+  const resultadosBusqueda = document.getElementById('resultadosBusqueda');
+  const solicitudesRecibidas = document.getElementById('solicitudesRecibidas');
 
-  // Buscar usuario
-  document.getElementById("buscarBtn").addEventListener("click", () => {
-    const texto = document.getElementById("busqueda").value.toLowerCase();
-    const filtrados = usuariosSimulados.filter((u) =>
-      u.nombre.toLowerCase().includes(texto)
-    );
-    resultadosBusqueda.innerHTML = "";
-    filtrados.forEach((usuario) => {
-      const li = document.createElement("li");
-      li.innerHTML = `${usuario.nombre} <button>Enviar solicitud</button>`;
-      resultadosBusqueda.appendChild(li);
+  async function cargarSolicitudes() {
+    try {
+      const res = await fetch(`/api/amistad/pendientes/${usuario.id}`);
+      const datos = await res.json();
+      solicitudesRecibidas.innerHTML = '';
+      datos.forEach((s) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${s.remitente} <button data-id="${s.id}" class="aceptar">Aceptar</button> <button data-id="${s.id}" class="rechazar">Rechazar</button>`;
+        solicitudesRecibidas.appendChild(li);
+      });
+    } catch (err) {
+      console.error('Error al cargar solicitudes', err);
+    }
+  }
+
+  solicitudesRecibidas.addEventListener('click', async (e) => {
+    if (e.target.tagName !== 'BUTTON') return;
+    const id = e.target.dataset.id;
+    const acepta = e.target.classList.contains('aceptar');
+    await fetch(`/api/amistad/responder/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acepta }),
     });
+    cargarSolicitudes();
   });
 
-  // Mostrar solicitudes
-  solicitudesSimuladas.forEach((usuario) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${usuario.nombre}
-      <button>Aceptar</button>
-      <button>Rechazar</button>`;
-    solicitudesRecibidas.appendChild(li);
+  document.getElementById('buscarBtn').addEventListener('click', async () => {
+    const texto = document.getElementById('busqueda').value.trim();
+    if (!texto) return;
+    try {
+      const res = await fetch(`/api/usuarios/${texto}`); // se asume ID o texto de nombre
+      if (!res.ok) {
+        resultadosBusqueda.innerHTML = '<li>Usuario no encontrado</li>';
+        return;
+      }
+      const usuarioEncontrado = await res.json();
+      resultadosBusqueda.innerHTML = '';
+      const li = document.createElement('li');
+      li.innerHTML = `${usuarioEncontrado.nombre} <button id="solicitarBtn">Enviar solicitud</button>`;
+      li.dataset.dest = usuarioEncontrado.id;
+      resultadosBusqueda.appendChild(li);
+    } catch (err) {
+      console.error('Error en búsqueda', err);
+    }
   });
 
-  // Mostrar amigos
-  amigosSimulados.forEach((usuario) => {
-    const li = document.createElement("li");
-    li.textContent = usuario.nombre;
-    listaAmigos.appendChild(li);
+  resultadosBusqueda.addEventListener('click', async (e) => {
+    if (e.target.id !== 'solicitarBtn') return;
+    const dest = e.target.parentElement.dataset.dest;
+    await fetch('/api/amistad/solicitar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_remitente: usuario.id, id_destinatario: dest }),
+    });
+    e.target.disabled = true;
+    e.target.textContent = 'Enviada';
   });
 
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    window.location.href = "login.html";
-  });
-  const imagenesAmigos = document.getElementById("imagenesAmigos");
-
-  // Simulación: una amiga aceptada compartió una imagen
-  const imagenesCompartidas = [
-    {
-      amigo: "Lucía Gómez",
-      titulo: "Tapiz en macramé",
-      url: "assets/macrame1.jpg",
-    },
-    {
-      amigo: "Esteban Ruiz",
-      titulo: "Pintura acrílica",
-      url: "assets/cuadro1.jpg",
-    },
-  ];
-
-  imagenesCompartidas.forEach((img) => {
-    const div = document.createElement("div");
-    div.classList.add("obra-publica");
-    div.innerHTML = `
-    <img src="${img.url}" alt="${img.titulo}">
-    <p><strong>${img.titulo}</strong><br>por ${img.amigo}</p>
-  `;
-    imagenesAmigos.appendChild(div);
-  });
+  cargarSolicitudes();
 });

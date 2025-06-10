@@ -1,6 +1,5 @@
 import { db } from '../db.js';
 
-// Obtener imágenes subidas por un usuario específico
 export const obtenerImagenesPorUsuario = async (req, res) => {
   try {
     const id_usuario = req.params.id;
@@ -18,14 +17,7 @@ export const obtenerImagenesPorUsuario = async (req, res) => {
           [img.id]
         );
         const destinatarios = rows.map((r) => r.id_usuario);
-
-        const [tagRows] = await db.query(
-          `SELECT t.nombre FROM imagenes_tags it JOIN tags t ON it.id_tag = t.id WHERE it.id_imagen = ?`,
-          [img.id]
-        );
-        const tags = tagRows.map((t) => t.nombre);
-
-        return { ...img, destinatarios, tags };
+        return { ...img, destinatarios };
       })
     );
 
@@ -33,5 +25,21 @@ export const obtenerImagenesPorUsuario = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener las imágenes del usuario:', error);
     res.status(500).json({ mensaje: 'Error al obtener las imágenes' });
+  }
+};
+
+// Obtener todas las imágenes públicas con datos de autor
+export const obtenerImagenesPublicas = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT i.id, i.id_usuario, i.url_archivo, i.descripcion, i.fecha_subida, u.nombre AS autor
+       FROM imagenes i JOIN usuarios u ON i.id_usuario = u.id
+       WHERE i.visibilidad = 'publica'
+       ORDER BY i.fecha_subida DESC`
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error al obtener imágenes públicas:', error);
+    res.status(500).json({ mensaje: 'Error al obtener imágenes públicas' });
   }
 };

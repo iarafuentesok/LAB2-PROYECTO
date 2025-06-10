@@ -15,11 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const lista = document.getElementById('listaNotificaciones');
-
   const socket = io();
   socket.emit('registrar', usuario.id);
+
+  let contador = 0;
+
   socket.on('notificacion', (notif) => {
     mostrarNotificacion(notif);
+    if (window.actualizarNotifCounter) {
+      window.actualizarNotifCounter(contador + 1);
+    }
   });
 
   async function cargar() {
@@ -27,10 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const datos = await res.json();
     lista.innerHTML = '';
     datos.forEach((n) => mostrarNotificacion(n));
+    contador = datos.filter((n) => !n.leido).length;
+    if (window.actualizarNotifCounter) {
+      window.actualizarNotifCounter(contador);
+    }
   }
 
   async function marcarLeida(id) {
     await fetch(`/api/notificaciones/${id}/leida`, { method: 'POST' });
+    if (contador > 0) {
+      contador -= 1;
+      if (window.actualizarNotifCounter) {
+        window.actualizarNotifCounter(contador);
+      }
+    }
   }
 
   function mostrarNotificacion(n) {

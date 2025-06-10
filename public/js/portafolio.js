@@ -1,46 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const galeria = document.getElementById("galeriaPublica");
-  const usuarios = JSON.parse(localStorage.getItem("usuariosSimulados")) || [];
-  const visitante = JSON.parse(localStorage.getItem("usuarioTemporal")) || null;
-  const token = localStorage.getItem("token");
+document.addEventListener('DOMContentLoaded', async () => {
+  const galeria = document.getElementById('galeriaPublica');
+  const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
 
-  const obrasPublicas = [];
-
-  usuarios.forEach((usuario) => {
-    if (usuario.modoVitrina && Array.isArray(usuario.imagenes)) {
-      usuario.imagenes.forEach((img) => {
-        if (puedeVerImagen(img, visitante, usuario)) {
-          obrasPublicas.push({
-            titulo: img.titulo,
-            url: img.url,
-            autor: usuario.nombre,
-            usuario_id: usuario.id,
-          });
-        }
-      });
+  try {
+    const res = await fetch('/api/imagenes/publicas');
+    const imagenes = await res.json();
+    if (imagenes.length === 0) {
+      galeria.innerHTML = '<p>No hay obras públicas disponibles por el momento.</p>';
+      return;
     }
-  });
 
-  if (obrasPublicas.length === 0) {
-    galeria.innerHTML =
-      "<p>No hay obras públicas disponibles por el momento.</p>";
-    return;
+    imagenes.forEach((obra) => {
+      const div = document.createElement('div');
+      div.classList.add('obra-publica');
+      div.innerHTML = `
+        <img src="${obra.url_archivo}" alt="${obra.descripcion || ''}">
+        <p class="titulo-obra">${obra.descripcion || ''}</p>
+        <p class="autor-obra">
+          por <a href="${usuario ? `perfil.html?usuario_id=${obra.id_usuario}` : 'login.html'}">
+            ${obra.autor}
+          </a>
+        </p>`;
+      galeria.appendChild(div);
+    });
+  } catch (err) {
+    console.error('Error al cargar portafolio', err);
+    galeria.innerHTML = '<p>Error al cargar obras públicas.</p>';
   }
-
-  obrasPublicas.forEach((obra) => {
-    const div = document.createElement("div");
-    div.classList.add("obra-publica");
-    div.innerHTML = `
-      <img src="${obra.url}" alt="${obra.titulo}">
-      <p class="titulo-obra">${obra.titulo}</p>
-      <p class="autor-obra">
-        por <a href="${
-          token ? `perfil.html?usuario_id=${obra.usuario_id}` : "login.html"
-        }">
-          ${obra.autor}
-        </a>
-      </p>
-    `;
-    galeria.appendChild(div);
-  });
 });

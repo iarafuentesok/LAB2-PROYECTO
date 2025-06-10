@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { db } from '../db.js';
 
+// Registrar usuario
 export const registrarUsuario = async (req, res) => {
-  console.log('LLEGÓ LA PETICIÓN', req.body); // ⚠️ Eliminá esta línea en producción
   try {
     const { nombre, email, password } = req.body;
 
@@ -31,6 +31,7 @@ export const registrarUsuario = async (req, res) => {
   }
 };
 
+// Login usuario
 export const loginUsuario = async (req, res) => {
   const { email, password } = req.body;
 
@@ -54,6 +55,7 @@ export const loginUsuario = async (req, res) => {
         id: usuario.id,
         nombre: usuario.nombre,
         email: usuario.email,
+        imagen_perfil: usuario.imagen_perfil,
       },
     });
   } catch (error) {
@@ -62,6 +64,7 @@ export const loginUsuario = async (req, res) => {
   }
 };
 
+// Obtener usuario por ID
 export const obtenerUsuarioPorId = async (req, res) => {
   try {
     const id = req.params.id;
@@ -81,30 +84,56 @@ export const obtenerUsuarioPorId = async (req, res) => {
   }
 };
 
+// Actualizar perfil (con imagen opcional)
 export const actualizarPerfil = async (req, res) => {
   try {
     const id = req.params.id;
-    const { nombre, email, imagen_perfil, intereses, antecedentes, modo_vitrina } = req.body;
+    const { nombre, email, intereses, antecedentes, modo_vitrina } = req.body;
 
-    await db.query(
-      `UPDATE usuarios SET
-        nombre = COALESCE(?, nombre),
-        email = COALESCE(?, email),
-        imagen_perfil = COALESCE(?, imagen_perfil),
-        intereses = COALESCE(?, intereses),
-        antecedentes = COALESCE(?, antecedentes),
-        modo_vitrina = COALESCE(?, modo_vitrina)
-       WHERE id = ?`,
-      [nombre, email, imagen_perfil, intereses, antecedentes, modo_vitrina, id]
-    );
+    const campos = [];
+    const valores = [];
 
-    res.json({ mensaje: 'Perfil actualizado' });
+    if (nombre !== undefined) {
+      campos.push('nombre = ?');
+      valores.push(nombre);
+    }
+    if (email !== undefined) {
+      campos.push('email = ?');
+      valores.push(email);
+    }
+    if (intereses !== undefined) {
+      campos.push('intereses = ?');
+      valores.push(intereses);
+    }
+    if (antecedentes !== undefined) {
+      campos.push('antecedentes = ?');
+      valores.push(antecedentes);
+    }
+    if (modo_vitrina !== undefined) {
+      campos.push('modo_vitrina = ?');
+      valores.push(modo_vitrina);
+    }
+    if (req.file) {
+      campos.push('imagen_perfil = ?');
+      valores.push(`/uploads/${req.file.filename}`);
+    }
+
+    if (campos.length === 0) {
+      return res.status(400).json({ mensaje: 'No hay datos para actualizar.' });
+    }
+
+    valores.push(id);
+
+    await db.query(`UPDATE usuarios SET ${campos.join(', ')} WHERE id = ?`, valores);
+
+    res.json({ mensaje: 'Perfil actualizado correctamente.' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar el perfil' });
   }
 };
 
+// Cambiar contraseña
 export const cambiarPassword = async (req, res) => {
   try {
     const id = req.params.id;
