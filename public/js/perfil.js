@@ -1,10 +1,20 @@
-document.addEventListener("DOMContentLoaded", async () => {
+async function obtenerUsuario() {
+  try {
+    const res = await fetch('/api/usuarios/me');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
-  const perfilId = params.get("usuario_id");
-  const visitante = JSON.parse(localStorage.getItem("usuarioActual"));
+  const perfilId = params.get('usuario_id');
+  const visitante = await obtenerUsuario();
 
   if (!visitante) {
-    window.location.href = "login.html";
+    window.location.href = 'login.html';
     return;
   }
 
@@ -18,37 +28,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     const perfil = await res.json();
 
     if (!perfil) {
-      document.body.innerHTML = "<p>Perfil no encontrado.</p>";
+      document.body.innerHTML = '<p>Perfil no encontrado.</p>';
       return;
     }
 
     // Mostrar datos personales
     const imgPerfil = perfil.imagen_perfil
       ? `/assets/${perfil.imagen_perfil}`
-      : "/assets/default-profile.png";
-    document.getElementById("nombrePerfil").textContent = perfil.nombre;
-    document.getElementById("imagenPerfil").src = imgPerfil;
-    document.getElementById("intereses").textContent = `🎨 Intereses: ${
-      perfil.intereses || "Sin datos"
+      : '/assets/default-profile.png';
+    document.getElementById('nombrePerfil').textContent = perfil.nombre;
+    document.getElementById('imagenPerfil').src = imgPerfil;
+    document.getElementById('intereses').textContent = `🎨 Intereses: ${
+      perfil.intereses || 'Sin datos'
     }`;
-    document.getElementById("antecedentes").textContent = `📜 Antecedentes: ${
-      perfil.antecedentes || "Sin datos"
+    document.getElementById('antecedentes').textContent = `📜 Antecedentes: ${
+      perfil.antecedentes || 'Sin datos'
     }`;
 
     if (esMiPerfil) {
-      document.getElementById("accionesPropias").style.display = "block";
-      document.getElementById("crearAlbumBtn").addEventListener("click", () => {
-        window.location.href = "albumes.html";
+      document.getElementById('accionesPropias').style.display = 'block';
+      document.getElementById('crearAlbumBtn').addEventListener('click', () => {
+        window.location.href = 'albumes.html';
       });
     }
 
     // IMÁGENES DESTACADAS
-    const galeria = document.getElementById("galeriaObras");
-    galeria.innerHTML = "";
+    const galeria = document.getElementById('galeriaObras');
+    galeria.innerHTML = '';
 
-    const resImgs = await fetch(
-      `http://localhost:3000/api/imagenes/usuario/${idPerfil}`
-    );
+    const resImgs = await fetch(`http://localhost:3000/api/imagenes/usuario/${idPerfil}`);
     const imagenes = await resImgs.json();
 
     const visibles = imagenes
@@ -56,60 +64,56 @@ document.addEventListener("DOMContentLoaded", async () => {
       .slice(0, 3);
 
     if (visibles.length === 0) {
-      galeria.innerHTML = "<p>No hay imágenes destacadas disponibles.</p>";
+      galeria.innerHTML = '<p>No hay imágenes destacadas disponibles.</p>';
     } else {
       visibles.forEach((img) => {
-        const div = document.createElement("div");
-        div.classList.add("obra-publica");
+        const div = document.createElement('div');
+        div.classList.add('obra-publica');
         div.innerHTML = `
-          <img src="${img.url_archivo}" alt="${img.descripcion || ""}">
-          ${img.descripcion ? `<p>${img.descripcion}</p>` : ""}
+          <img src="${img.url_archivo}" alt="${img.descripcion || ''}">
+          ${img.descripcion ? `<p>${img.descripcion}</p>` : ''}
         `;
-        div.querySelector("img").addEventListener("click", () => {
-          document.getElementById("lightboxImagen").src = img.url_archivo;
-          document.getElementById("lightboxTitulo").textContent =
-            img.descripcion || "";
-          document.getElementById("lightboxDescripcion").textContent = "";
-          document.getElementById("lightbox").style.display = "flex";
+        div.querySelector('img').addEventListener('click', () => {
+          document.getElementById('lightboxImagen').src = img.url_archivo;
+          document.getElementById('lightboxTitulo').textContent = img.descripcion || '';
+          document.getElementById('lightboxDescripcion').textContent = '';
+          document.getElementById('lightbox').style.display = 'flex';
         });
         galeria.appendChild(div);
       });
     }
 
     // ÁLBUMES
-    const albumesContenedor = document.getElementById("listaAlbumes");
-    albumesContenedor.innerHTML = "";
+    const albumesContenedor = document.getElementById('listaAlbumes');
+    albumesContenedor.innerHTML = '';
 
-    const resAlbumes = await fetch(
-      `http://localhost:3000/api/albumes/usuario/${idPerfil}`
-    );
+    const resAlbumes = await fetch(`http://localhost:3000/api/albumes/usuario/${idPerfil}`);
     const albumes = await resAlbumes.json();
 
     if (albumes.length === 0) {
-      albumesContenedor.innerHTML =
-        "<p>Este usuario aún no tiene álbumes públicos.</p>";
+      albumesContenedor.innerHTML = '<p>Este usuario aún no tiene álbumes públicos.</p>';
     } else {
       albumes.forEach((album) => {
-        const div = document.createElement("div");
-        div.classList.add("album");
+        const div = document.createElement('div');
+        div.classList.add('album');
 
         const imagenesHTML = (album.imagenes || [])
           .filter((img) => puedeVerImagen(img, idVisitante, esMiPerfil))
           .map(
             (img) => `
               <div class="imagen-album">
-                <img src="${img.url_archivo}" alt="${img.descripcion || ""}">
-                ${img.descripcion ? `<p>${img.descripcion}</p>` : ""}
+                <img src="${img.url_archivo}" alt="${img.descripcion || ''}">
+                ${img.descripcion ? `<p>${img.descripcion}</p>` : ''}
               </div>
             `
           )
-          .join("");
+          .join('');
 
         div.innerHTML = `
           <h4>${album.titulo}</h4>
           <p>${imagenesHTML.length} ${
-          imagenesHTML.length === 1 ? "imagen" : "imágenes"
-        } visibles</p>
+            imagenesHTML.length === 1 ? 'imagen' : 'imágenes'
+          } visibles</p>
           <div class="imagenes-album">${imagenesHTML}</div>
         `;
 
@@ -118,47 +122,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // LIGHTBOX
-    document.getElementById("cerrarLightbox").addEventListener("click", () => {
-      document.getElementById("lightbox").style.display = "none";
+    document.getElementById('cerrarLightbox').addEventListener('click', () => {
+      document.getElementById('lightbox').style.display = 'none';
     });
 
-    document.querySelectorAll(".imagenes-album img").forEach((img) => {
-      img.addEventListener("click", () => {
-        document.getElementById("lightboxImagen").src = img.src;
-        document.getElementById("lightboxTitulo").textContent = img.alt || "";
-        document.getElementById("lightboxDescripcion").textContent = "";
-        document.getElementById("lightbox").style.display = "flex";
+    document.querySelectorAll('.imagenes-album img').forEach((img) => {
+      img.addEventListener('click', () => {
+        document.getElementById('lightboxImagen').src = img.src;
+        document.getElementById('lightboxTitulo').textContent = img.alt || '';
+        document.getElementById('lightboxDescripcion').textContent = '';
+        document.getElementById('lightbox').style.display = 'flex';
       });
     });
 
-    const logoutBtn = document.getElementById("logoutBtn");
+    const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", (e) => {
+      logoutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        localStorage.removeItem("usuarioActual");
-        window.location.href = "index.html";
+        await fetch('/api/usuarios/logout', { method: 'POST' });
+        window.location.href = 'index.html';
       });
     }
   } catch (error) {
-    console.error("Error al cargar perfil:", error);
-    document.body.innerHTML = "<p>Error al cargar el perfil.</p>";
+    console.error('Error al cargar perfil:', error);
+    document.body.innerHTML = '<p>Error al cargar el perfil.</p>';
   }
 });
 
 function puedeVerImagen(imagen, visitanteId, esMiPerfil) {
   if (esMiPerfil) return true;
-  if (imagen.visibilidad === "publica") return true;
-  if (imagen.visibilidad === "privada_todos") {
-    return (
-      Array.isArray(imagen.seguidores) &&
-      imagen.seguidores.includes(visitanteId)
-    );
+  if (imagen.visibilidad === 'publica') return true;
+  if (imagen.visibilidad === 'privada' || imagen.visibilidad === 'privada_todos') {
+    return Array.isArray(imagen.seguidores) && imagen.seguidores.includes(visitanteId);
   }
-  if (imagen.visibilidad === "privada_select") {
-    return (
-      Array.isArray(imagen.destinatarios) &&
-      imagen.destinatarios.includes(visitanteId)
-    );
+  if (imagen.visibilidad === 'compartida' || imagen.visibilidad === 'privada_select') {
+    return Array.isArray(imagen.destinatarios) && imagen.destinatarios.includes(visitanteId);
   }
   return false;
 }

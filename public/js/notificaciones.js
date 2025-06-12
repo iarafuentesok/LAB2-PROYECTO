@@ -1,14 +1,15 @@
-function obtenerUsuarioActual() {
+async function obtenerUsuarioActual() {
   try {
-    const data = localStorage.getItem('usuarioActual');
-    return data ? JSON.parse(data) : null;
+    const res = await fetch('/api/usuarios/me');
+    if (!res.ok) return null;
+    return await res.json();
   } catch {
     return null;
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const usuario = obtenerUsuarioActual();
+document.addEventListener('DOMContentLoaded', async () => {
+  const usuario = await obtenerUsuarioActual();
   if (!usuario) {
     window.location.href = 'login.html';
     return;

@@ -1,19 +1,19 @@
 // public/js/auth.js
 
-export function obtenerUsuarioActual() {
+export async function obtenerUsuarioActual() {
   try {
-    const data = localStorage.getItem("usuarioActual");
-    if (!data) return null;
-    return JSON.parse(data);
+    const res = await fetch('/api/usuarios/me');
+    if (!res.ok) return null;
+    return await res.json();
   } catch {
     return null;
   }
 }
 
-export function verificarSesion() {
-  const usuario = obtenerUsuarioActual();
+export async function verificarSesion() {
+  const usuario = await obtenerUsuarioActual();
   if (!usuario) {
-    window.location.href = "login.html";
+    window.location.href = 'login.html';
   }
   return usuario;
 }

@@ -49,6 +49,7 @@ export const loginUsuario = async (req, res) => {
       return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
     }
 
+    req.session.usuarioId = usuario.id;
     res.status(200).json({
       mensaje: 'Login exitoso',
       usuario: {
@@ -62,6 +63,31 @@ export const loginUsuario = async (req, res) => {
     console.error(error);
     res.status(500).json({ mensaje: 'Error en el servidor' });
   }
+};
+
+export const obtenerUsuarioSesion = async (req, res) => {
+  if (!req.session.usuarioId) {
+    return res.status(401).json({ mensaje: 'No autenticado' });
+  }
+  try {
+    const [rows] = await db.query(
+      'SELECT id, nombre, email, imagen_perfil FROM usuarios WHERE id = ?',
+      [req.session.usuarioId]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+    res.json(rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener usuario' });
+  }
+};
+
+export const logoutUsuario = (req, res) => {
+  req.session.destroy(() => {
+    res.json({ mensaje: 'Sesión cerrada' });
+  });
 };
 
 // Obtener usuario por ID

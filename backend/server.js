@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
+import session from 'express-session';
 import { fileURLToPath } from 'url';
 import { initSocket } from './socket.js';
 
@@ -40,6 +41,16 @@ app.use(morgan('dev'));
 
 // 📦 Parseo JSON en requests
 app.use(express.json());
+
+// 🗝 Gestión de sesiones básicas
+app.use(
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true },
+  })
+);
 
 // 🧩 Archivos estáticos (HTML, CSS, JS, imágenes)
 app.use(express.static(publicPath));

@@ -1,6 +1,16 @@
+async function obtenerUsuario() {
+  try {
+    const res = await fetch('/api/usuarios/me');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const galeria = document.getElementById('galeriaPublica');
-  const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+  const usuario = await obtenerUsuario();
 
   try {
     const res = await fetch('/api/imagenes/publicas');

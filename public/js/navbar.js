@@ -1,6 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
+async function obtenerUsuario() {
+  try {
+    const res = await fetch('/api/usuarios/me');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   const nav = document.getElementById('navPublico');
-  const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+  const usuario = await obtenerUsuario();
   const ruta = window.location.pathname;
 
   if (!nav) return;
@@ -43,10 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Logout
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     if (e.target.id === 'logoutBtn') {
       e.preventDefault();
-      localStorage.removeItem('usuarioActual');
+      await fetch('/api/usuarios/logout', { method: 'POST' });
       window.location.href = 'index.html';
     }
   });

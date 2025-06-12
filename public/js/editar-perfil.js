@@ -1,3 +1,13 @@
+async function obtenerUsuario() {
+  try {
+    const res = await fetch('/api/usuarios/me');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('perfilForm');
   const passwordForm = document.getElementById('passwordForm');
@@ -6,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const saludo = document.getElementById('saludoUsuario');
   const checkboxVitrina = document.getElementById('modoVitrina');
 
-  const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+  const usuario = await obtenerUsuario();
   if (!usuario) {
     window.location.href = 'login.html';
     return;
@@ -44,13 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (resp.ok) {
       mensaje.style.color = 'green';
       mensaje.textContent = 'Cambios guardados correctamente ✔️';
-      const updated = await resp.json().catch(() => null);
-      if (updated && updated.nombre) {
-        localStorage.setItem(
-          'usuarioActual',
-          JSON.stringify({ ...usuario, nombre: document.getElementById('nombre').value.trim() })
-        );
-      }
+      await resp.json().catch(() => null);
     } else {
       mensaje.style.color = 'red';
       mensaje.textContent = 'Error al actualizar perfil';
