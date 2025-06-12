@@ -13,6 +13,6 @@ const router = express.Router();
 router.post('/registro', registrarUsuario);
 router.post('/login', loginUsuario);
 router.get('/:id', obtenerUsuarioPorId);
-router.put('/:id', upload.single('imagen'), actualizarUsuario);
+router.put('/:id', upload.single('imagen'), actualizarPerfil);
 router.put('/:id/password', cambiarPassword);
 export default router;
