@@ -50,6 +50,12 @@ export const obtenerAlbumesPorUsuario = async (req, res) => {
 export const crearAlbum = async (req, res) => {
   try {
     const { titulo, id_usuario } = req.body;
+
+    const [usuarios] = await db.query('SELECT id FROM usuarios WHERE id = ?', [id_usuario]);
+    if (usuarios.length === 0) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
     await db.query('INSERT INTO albumes (titulo, id_usuario) VALUES (?, ?)', [titulo, id_usuario]);
     res.status(201).json({ mensaje: 'Álbum creado correctamente' });
   } catch (err) {
