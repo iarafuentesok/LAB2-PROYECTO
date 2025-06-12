@@ -61,7 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   passwordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const nuevaPass = document.getElementById('password').value;
+    const actual = document.getElementById('passwordActual').value;
+    const nuevaPass = document.getElementById('passwordNuevo').value;
     if (nuevaPass.trim().length < 4) {
       mensaje.style.color = 'red';
       mensaje.textContent = 'La contraseña debe tener al menos 4 caracteres.';
@@ -69,9 +70,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const resp = await fetch(`/api/usuarios/${usuario.id}/password`, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: nuevaPass }),
+      body: JSON.stringify({
+        password_actual: actual,
+        password_nuevo: nuevaPass,
+      }),
     });
 
     if (resp.ok) {
