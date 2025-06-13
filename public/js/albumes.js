@@ -41,7 +41,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       div.classList.add('album');
 
       const imagenesHTML = (album.imagenes || [])
-        .map((img) => `<img src="${img.url_archivo}" alt="${img.descripcion || ''}">`)
+        .map(
+          (img) =>
+            `<img src="${img.url_archivo}" data-id="${img.id}" alt="${img.descripcion || ''}">`
+        )
         .join('');
 
       div.innerHTML = `
@@ -96,6 +99,54 @@ document.addEventListener('DOMContentLoaded', async () => {
           mensajeImagen.textContent = '❌ Error al subir la imagen.';
         }
         setTimeout(() => (mensajeImagen.textContent = ''), 3000);
+      });
+    });
+    let imagenActual = null;
+
+    async function cargarComentarios(idImagen) {
+      try {
+        const res = await fetch(`/api/comentarios/imagen/${idImagen}`);
+        const comentarios = await res.json();
+        const lista = document.getElementById('listaComentarios');
+        lista.innerHTML = '';
+        comentarios.forEach((c) => {
+          const li = document.createElement('li');
+          li.textContent = `${c.nombre}: ${c.comentario}`;
+          lista.appendChild(li);
+        });
+      } catch (e) {
+        console.error('Error comentarios', e);
+      }
+    }
+
+    document.getElementById('formComentario').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!imagenActual) return;
+      const texto = document.getElementById('comentario').value.trim();
+      if (!texto) return;
+      const resp = await fetch(`/api/comentarios/imagen/${imagenActual}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_usuario: usuario.id, comentario: texto }),
+      });
+      if (resp.ok) {
+        document.getElementById('comentario').value = '';
+        await cargarComentarios(imagenActual);
+      }
+    });
+
+    document.getElementById('cerrarLightbox').addEventListener('click', () => {
+      document.getElementById('lightbox').style.display = 'none';
+    });
+
+    document.querySelectorAll('.imagenes-album img').forEach((img) => {
+      img.addEventListener('click', async () => {
+        imagenActual = img.dataset.id;
+        document.getElementById('lightboxImagen').src = img.src;
+        document.getElementById('lightboxTitulo').textContent = img.alt || '';
+        document.getElementById('lightboxDescripcion').textContent = '';
+        document.getElementById('lightbox').style.display = 'flex';
+        await cargarComentarios(imagenActual);
       });
     });
   }

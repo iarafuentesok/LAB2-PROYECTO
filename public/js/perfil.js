@@ -70,14 +70,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const div = document.createElement('div');
         div.classList.add('obra-publica');
         div.innerHTML = `
-          <img src="${img.url_archivo}" alt="${img.descripcion || ''}">
+          <img src="${img.url_archivo}" data-id="${img.id}" alt="${img.descripcion || ''}">
           ${img.descripcion ? `<p>${img.descripcion}</p>` : ''}
         `;
-        div.querySelector('img').addEventListener('click', () => {
+        div.querySelector('img').addEventListener('click', async () => {
+          imagenActual = img.id;
           document.getElementById('lightboxImagen').src = img.url_archivo;
           document.getElementById('lightboxTitulo').textContent = img.descripcion || '';
           document.getElementById('lightboxDescripcion').textContent = '';
           document.getElementById('lightbox').style.display = 'flex';
+          await cargarComentarios(imagenActual);
         });
         galeria.appendChild(div);
       });
@@ -102,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           .map(
             (img) => `
               <div class="imagen-album">
-                <img src="${img.url_archivo}" alt="${img.descripcion || ''}">
+                                <img src="${img.url_archivo}" data-id="${img.id}" alt="${img.descripcion || ''}">
                 ${img.descripcion ? `<p>${img.descripcion}</p>` : ''}
               </div>
             `
@@ -122,16 +124,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // LIGHTBOX
+    let imagenActual = null;
+
+    async function cargarComentarios(idImagen) {
+      try {
+        const res = await fetch(`/api/comentarios/imagen/${idImagen}`);
+        const comentarios = await res.json();
+        const lista = document.getElementById('listaComentarios');
+        lista.innerHTML = '';
+        comentarios.forEach((c) => {
+          const li = document.createElement('li');
+          li.textContent = `${c.nombre}: ${c.comentario}`;
+          lista.appendChild(li);
+        });
+      } catch (e) {
+        console.error('Error comentarios', e);
+      }
+    }
+
+    document.getElementById('formComentario').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!imagenActual) return;
+      const texto = document.getElementById('comentario').value.trim();
+      if (!texto) return;
+      const resp = await fetch(`/api/comentarios/imagen/${imagenActual}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_usuario: visitante.id, comentario: texto }),
+      });
+      if (resp.ok) {
+        document.getElementById('comentario').value = '';
+        await cargarComentarios(imagenActual);
+      }
+    });
+
     document.getElementById('cerrarLightbox').addEventListener('click', () => {
       document.getElementById('lightbox').style.display = 'none';
     });
 
     document.querySelectorAll('.imagenes-album img').forEach((img) => {
-      img.addEventListener('click', () => {
+      img.addEventListener('click', async () => {
+        imagenActual = img.dataset.id;
         document.getElementById('lightboxImagen').src = img.src;
         document.getElementById('lightboxTitulo').textContent = img.alt || '';
         document.getElementById('lightboxDescripcion').textContent = '';
         document.getElementById('lightbox').style.display = 'flex';
+        await cargarComentarios(imagenActual);
       });
     });
 

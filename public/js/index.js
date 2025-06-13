@@ -9,6 +9,8 @@ async function obtenerUsuario() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Al ingresar al inicio siempre cerramos cualquier sesión activa
+  await fetch('/api/usuarios/logout', { method: 'POST' });
   const usuario = await obtenerUsuario();
   if (usuario) {
     const mensaje = document.createElement('p');
