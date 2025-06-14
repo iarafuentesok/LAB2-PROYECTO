@@ -207,11 +207,25 @@ export const buscarUsuarios = async (req, res) => {
     return res.status(400).json({ mensaje: 'Se requiere un término de búsqueda' });
   }
 
+  const idActual = req.session.usuarioId || 0;
+
   try {
-    const [rows] = await db.query(
-      'SELECT id, nombre, email, imagen_perfil FROM usuarios WHERE nombre LIKE ? OR email LIKE ? ORDER BY nombre',
-      [`%${termino}%`, `%${termino}%`]
-    );
+    let query =
+      'SELECT u.id, u.nombre, u.email, u.imagen_perfil, ' +
+      'EXISTS(SELECT 1 FROM amistades a WHERE a.id_usuario = ? AND a.id_amigo = u.id) AS siguiendo, ' +
+      "EXISTS(SELECT 1 FROM solicitudes_amistad s WHERE s.id_remitente = ? AND s.id_destinatario = u.id AND s.estado = 'pendiente') AS solicitud_pendiente " +
+      'FROM usuarios u WHERE (u.nombre LIKE ? OR u.email LIKE ?)';
+
+    const params = [idActual, idActual, `%${termino}%`, `%${termino}%`];
+
+    if (idActual) {
+      query += ' AND u.id <> ?';
+      params.push(idActual);
+    }
+
+    query += ' ORDER BY u.nombre';
+
+    const [rows] = await db.query(query, params);
     res.json(rows);
   } catch (error) {
     console.error(error);

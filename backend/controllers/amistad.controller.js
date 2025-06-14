@@ -9,6 +9,21 @@ export const enviarSolicitud = async (req, res) => {
       return res.status(400).json({ mensaje: 'Datos incompletos' });
     }
 
+    const [existePendiente] = await db.query(
+      'SELECT id FROM solicitudes_amistad WHERE id_remitente = ? AND id_destinatario = ? AND estado = "pendiente"',
+      [id_remitente, id_destinatario]
+    );
+    if (existePendiente.length) {
+      return res.status(409).json({ mensaje: 'Solicitud ya enviada' });
+    }
+
+    const [yaAmigos] = await db.query(
+      'SELECT id FROM amistades WHERE id_usuario = ? AND id_amigo = ?',
+      [id_remitente, id_destinatario]
+    );
+    if (yaAmigos.length) {
+      return res.status(409).json({ mensaje: 'Ya son amigos' });
+    }
     await db.query(
       'INSERT INTO solicitudes_amistad (id_remitente, id_destinatario) VALUES (?, ?)',
       [id_remitente, id_destinatario]
