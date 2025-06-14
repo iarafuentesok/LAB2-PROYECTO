@@ -8,6 +8,7 @@ import {
   cambiarPassword,
   obtenerUsuarioSesion,
   logoutUsuario,
+  buscarUsuarios,
 } from '../controllers/usuarios.controller.js';
 import { upload } from '../middlewares/upload.middleware.js';
 import { loginLimiter, registroLimiter } from '../middlewares/rateLimit.middleware.js';
@@ -17,6 +18,7 @@ router.post('/registro', registroLimiter, registrarUsuario);
 router.post('/login', loginLimiter, loginUsuario);
 router.post('/logout', logoutUsuario);
 router.get('/me', obtenerUsuarioSesion);
+router.get('/buscar', buscarUsuarios);
 router.get('/:id', obtenerUsuarioPorId);
 router.put('/:id', upload.single('imagen'), actualizarPerfil);
 router.put('/:id/password', cambiarPassword);

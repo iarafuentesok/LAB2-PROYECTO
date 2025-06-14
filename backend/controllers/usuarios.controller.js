@@ -198,4 +198,23 @@ export const cambiarPassword = async (req, res) => {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar contraseña' });
   }
+
+  // Buscar usuarios por nombre o email
+  export const buscarUsuarios = async (req, res) => {
+    const termino = req.query.q ? req.query.q.trim() : '';
+    if (!termino) {
+      return res.status(400).json({ mensaje: 'Se requiere un término de búsqueda' });
+    }
+
+    try {
+      const [rows] = await db.query(
+        'SELECT id, nombre, email, imagen_perfil FROM usuarios WHERE nombre LIKE ? OR email LIKE ? ORDER BY nombre',
+        [`%${termino}%`, `%${termino}%`]
+      );
+      res.json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ mensaje: 'Error al buscar usuarios' });
+    }
+  };
 };

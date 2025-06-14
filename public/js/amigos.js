@@ -76,17 +76,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const texto = document.getElementById('busqueda').value.trim();
     if (!texto) return;
     try {
-      const res = await fetch(`/api/usuarios/${texto}`); // se asume ID o texto de nombre
-      if (!res.ok) {
+      const res = await fetch(`/api/usuarios/buscar?q=${encodeURIComponent(texto)}`);
+      const usuarios = res.ok ? await res.json() : [];
+      resultadosBusqueda.innerHTML = '';
+      if (!usuarios.length) {
         resultadosBusqueda.innerHTML = '<li>Usuario no encontrado</li>';
         return;
       }
-      const usuarioEncontrado = await res.json();
-      resultadosBusqueda.innerHTML = '';
-      const li = document.createElement('li');
-      li.innerHTML = `${usuarioEncontrado.nombre} <button id="solicitarBtn">Enviar solicitud</button>`;
-      li.dataset.dest = usuarioEncontrado.id;
-      resultadosBusqueda.appendChild(li);
+      usuarios.forEach((u) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${u.nombre} <button id="solicitarBtn">Enviar solicitud</button>`;
+        li.dataset.dest = u.id;
+        resultadosBusqueda.appendChild(li);
+      });
     } catch (err) {
       console.error('Error en búsqueda', err);
     }
