@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { db } from '../db.js';
+import { validarPasswordSegura } from '../utils/seguridad.js';
 
 // Registrar usuario
 export const registrarUsuario = async (req, res) => {
@@ -8,6 +9,10 @@ export const registrarUsuario = async (req, res) => {
 
     if (!nombre || !email || !password) {
       return res.status(400).json({ mensaje: 'Faltan campos obligatorios.' });
+    }
+
+    if (!validarPasswordSegura(password)) {
+      return res.status(400).json({ mensaje: 'La contraseña no es lo suficientemente segura.' });
     }
 
     const [usuarios] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
@@ -169,6 +174,9 @@ export const cambiarPassword = async (req, res) => {
       return res.status(400).json({ mensaje: 'Faltan datos' });
     }
 
+    if (!validarPasswordSegura(password_nuevo)) {
+      return res.status(400).json({ mensaje: 'La nueva contraseña no cumple con los requisitos.' });
+    }
     const [rows] = await db.query('SELECT password FROM usuarios WHERE id = ?', [id]);
 
     if (rows.length === 0) {

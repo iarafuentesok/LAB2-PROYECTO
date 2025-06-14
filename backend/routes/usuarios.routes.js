@@ -10,10 +10,11 @@ import {
   logoutUsuario,
 } from '../controllers/usuarios.controller.js';
 import { upload } from '../middlewares/upload.middleware.js';
+import { loginLimiter, registroLimiter } from '../middlewares/rateLimit.middleware.js';
 const router = express.Router();
 
-router.post('/registro', registrarUsuario);
-router.post('/login', loginUsuario);
+router.post('/registro', registroLimiter, registrarUsuario);
+router.post('/login', loginLimiter, loginUsuario);
 router.post('/logout', logoutUsuario);
 router.get('/me', obtenerUsuarioSesion);
 router.get('/:id', obtenerUsuarioPorId);
