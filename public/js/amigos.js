@@ -86,14 +86,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       usuarios.forEach((u) => {
         const li = document.createElement('li');
         li.dataset.dest = u.id;
-        let contenido = `${u.nombre} `;
-        if (u.siguiendo) {
+
+        let contenido = `<a href="perfil.html?usuario_id=${u.id}">${u.nombre}</a> `;
+
+        if (u.id === usuario.id) {
+          contenido += '<span>(Tú)</span>';
+        } else if (u.siguiendo) {
           contenido += '<span>Ya son amigos</span>';
         } else if (u.solicitud_pendiente) {
           contenido += '<span>Solicitud enviada</span>';
         } else {
           contenido += '<button id="solicitarBtn">Enviar solicitud</button>';
         }
+
         li.innerHTML = contenido;
         resultadosBusqueda.appendChild(li);
       });

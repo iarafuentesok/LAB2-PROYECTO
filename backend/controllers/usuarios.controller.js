@@ -218,11 +218,6 @@ export const buscarUsuarios = async (req, res) => {
 
     const params = [idActual, idActual, `%${termino}%`, `%${termino}%`];
 
-    if (idActual) {
-      query += ' AND u.id <> ?';
-      params.push(idActual);
-    }
-
     query += ' ORDER BY u.nombre';
 
     const [rows] = await db.query(query, params);
