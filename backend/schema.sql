@@ -72,10 +72,10 @@ CREATE TABLE solicitudes_amistad (
 -- Amistades confirmadas (una sola fila por par, con restricción para evitar duplicados)
 CREATE TABLE amistades (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  id_usuario INT NOT NULL,
-  id_amigo INT NOT NULL,
+    id_usuario INT NOT NULL, -- seguidor
+  id_amigo INT NOT NULL,   -- seguido
   fecha_amistad TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CHECK (id_usuario < id_amigo),
+  UNIQUE KEY unique_seguidor (id_usuario, id_amigo),
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
   FOREIGN KEY (id_amigo) REFERENCES usuarios(id) ON DELETE CASCADE
 );

@@ -56,11 +56,11 @@ export const responderSolicitud = async (req, res) => {
     );
 
     if (acepta) {
-      const id1 = Math.min(solicitud.id_remitente, solicitud.id_destinatario);
-      const id2 = Math.max(solicitud.id_remitente, solicitud.id_destinatario);
-
-      // Registrar la amistad
-      await db.query('INSERT INTO amistades (id_usuario, id_amigo) VALUES (?, ?)', [id1, id2]);
+      // Registrar seguimiento del remitente hacia el destinatario
+      await db.query('INSERT INTO amistades (id_usuario, id_amigo) VALUES (?, ?)', [
+        solicitud.id_remitente,
+        solicitud.id_destinatario,
+      ]);
 
       // Crear álbum en el remitente con el nombre del destinatario
       const [userRows] = await db.query('SELECT nombre FROM usuarios WHERE id = ?', [
@@ -124,8 +124,9 @@ export const obtenerAmigos = async (req, res) => {
     const [rows] = await db.query(
       `SELECT u.id, u.nombre
        FROM amistades a
-       JOIN usuarios u ON (a.id_usuario = ? AND u.id = a.id_amigo) OR (a.id_amigo = ? AND u.id = a.id_usuario)`,
-      [id_usuario, id_usuario]
+              JOIN usuarios u ON u.id = a.id_amigo
+       WHERE a.id_usuario = ?`,
+      [id_usuario]
     );
     res.json(rows);
   } catch (error) {

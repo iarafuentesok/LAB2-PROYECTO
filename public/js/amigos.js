@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const resultadosBusqueda = document.getElementById('resultadosBusqueda');
   const solicitudesRecibidas = document.getElementById('solicitudesRecibidas');
-
+  const listaAmigos = document.getElementById('listaAmigos');
+  const imagenesAmigos = document.getElementById('imagenesAmigos');
   async function cargarSolicitudes() {
     try {
       const res = await fetch(`/api/amistad/pendientes/${usuario.id}`);
@@ -30,6 +31,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     } catch (err) {
       console.error('Error al cargar solicitudes', err);
+    }
+  }
+  async function cargarAmigos() {
+    try {
+      const res = await fetch(`/api/amistad/amigos/${usuario.id}`);
+      const amigos = await res.json();
+      listaAmigos.innerHTML = '';
+      imagenesAmigos.innerHTML = '';
+      for (const amigo of amigos) {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="perfil.html?usuario_id=${amigo.id}">${amigo.nombre}</a>`;
+        listaAmigos.appendChild(li);
+
+        const resImg = await fetch(`/api/imagenes/usuario/${amigo.id}`);
+        const imagenes = await resImg.json();
+        imagenes
+          .filter((img) => img.visibilidad === 'publica')
+          .forEach((img) => {
+            const imgEl = document.createElement('img');
+            imgEl.src = img.url_archivo;
+            imgEl.alt = img.descripcion || '';
+            imagenesAmigos.appendChild(imgEl);
+          });
+      }
+    } catch (err) {
+      console.error('Error al cargar amigos', err);
     }
   }
 
@@ -78,4 +105,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   cargarSolicitudes();
+  cargarAmigos();
 });
