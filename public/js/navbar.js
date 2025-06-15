@@ -26,15 +26,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const mostrarNavPrivado = () => {
     nav.innerHTML = `
-    <a href="inicio.html">Inicio</a>
-    <a href="perfil.html">Perfil</a>
-    <a href="albumes.html">Álbumes</a>
-    <a href="amigos.html">Amigos</a>
-    <a href="eventos.html">Eventos</a>
-    <a href="notificaciones.html">Notificaciones<span id="notifCounter" class="badge" style="display:none"></span></a>
-    <a href="portafolio.html">Portafolio</a>
-    <a href="#" id="logoutBtn">Cerrar sesión</a>
-  `;
+      <a href="inicio.html">Inicio</a>
+      <a href="perfil.html">Perfil</a>
+      <a href="albumes.html">Álbumes</a>
+      <a href="amigos.html">Amigos</a>
+      <a href="eventos.html">Eventos</a>
+      <a href="notificaciones.html">Notificaciones<span id="notifCounter" class="badge" style="display:none"></span></a>
+      <a href="portafolio.html">Portafolio</a>
+      <a href="#" id="logoutBtn">Cerrar sesión</a>
+    `;
   };
 
   // NAV lógico por sesión
@@ -97,17 +97,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    if (typeof io === 'undefined') {
-      const s = document.createElement('script');
-      s.src = 'https://cdn.socket.io/4.7.4/socket.io.min.js';
-      s.onload = () => {
-        conectar();
-        cargarConteo();
-      };
-      document.head.appendChild(s);
-    } else {
-      conectar();
-      cargarConteo();
-    }
+    // Ya asumimos que socket.io.min.js fue cargado desde HTML
+    conectar();
+    cargarConteo();
   }
 });

@@ -52,11 +52,41 @@ document.addEventListener('DOMContentLoaded', async () => {
   function mostrarNotificacion(n) {
     const li = document.createElement('li');
     li.textContent = n.mensaje;
-    if (n.url) {
+    if (n.url && n.tipo !== 'amistad') {
       const a = document.createElement('a');
       a.href = n.url;
       a.textContent = ' Ver';
       li.appendChild(a);
+    }
+
+    if (n.tipo === 'amistad' && n.url && n.url.startsWith('/solicitud/')) {
+      const idSol = n.url.split('/').pop();
+      const aceptar = document.createElement('button');
+      aceptar.textContent = 'Aceptar';
+      const rechazar = document.createElement('button');
+      rechazar.textContent = 'Rechazar';
+      aceptar.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await fetch(`/api/amistad/responder/${idSol}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ acepta: true }),
+        });
+        li.remove();
+        marcarLeida(n.id);
+      });
+      rechazar.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await fetch(`/api/amistad/responder/${idSol}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ acepta: false }),
+        });
+        li.remove();
+        marcarLeida(n.id);
+      });
+      li.appendChild(aceptar);
+      li.appendChild(rechazar);
     }
     if (!n.leido) {
       li.classList.add('no-leido');

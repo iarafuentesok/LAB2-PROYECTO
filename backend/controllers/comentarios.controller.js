@@ -23,9 +23,16 @@ export const agregarComentario = async (req, res) => {
     if (rows.length) {
       const autor = rows[0].id_usuario;
       if (autor !== id_usuario) {
+        const [[{ nombre: comentarista }]] = await db.query(
+          'SELECT nombre FROM usuarios WHERE id = ?',
+          [id_usuario]
+        );
+
+        const extracto = comentario.length > 20 ? `${comentario.slice(0, 20)}...` : comentario;
+        const mensaje = `${comentarista} comentó: ${extracto}`;
         const [resNotif] = await db.query(
           "INSERT INTO notificaciones (id_usuario, tipo, mensaje, url) VALUES (?, 'comentario', ?, ?)",
-          [autor, `Nuevo comentario en tu imagen`, `/imagen/${id_imagen}`]
+          [autor, mensaje, `/imagen/${id_imagen}`]
         );
 
         // Notificación en tiempo real
@@ -34,7 +41,7 @@ export const agregarComentario = async (req, res) => {
           .emit('notificacion', {
             id: resNotif.insertId,
             tipo: 'comentario',
-            mensaje: `Nuevo comentario en tu imagen`,
+            mensaje,
             url: `/imagen/${id_imagen}`,
             leido: 0,
           });

@@ -24,23 +24,32 @@ export const enviarSolicitud = async (req, res) => {
     if (yaAmigos.length) {
       return res.status(409).json({ mensaje: 'Ya son amigos' });
     }
-    await db.query(
+
+    const [solRes] = await db.query(
       'INSERT INTO solicitudes_amistad (id_remitente, id_destinatario) VALUES (?, ?)',
       [id_remitente, id_destinatario]
     );
+    const [[{ nombre: remitenteNombre }]] = await db.query(
+      'SELECT nombre FROM usuarios WHERE id = ?',
+      [id_remitente]
+    );
 
+    const mensaje = `Nueva solicitud de amistad de ${remitenteNombre}`;
     const [result] = await db.query(
-      "INSERT INTO notificaciones (id_usuario, tipo, mensaje) VALUES (?, 'amistad', ?)",
-      [id_destinatario, 'Nueva solicitud de amistad']
+      "INSERT INTO notificaciones (id_usuario, tipo, mensaje, url) VALUES (?, 'amistad', ?, ?)",
+      [id_destinatario, mensaje, `/solicitud/${solRes.insertId}`]
     );
 
     // Notificación en tiempo real al destinatario
-    getIO().to(String(id_destinatario)).emit('notificacion', {
-      id: result.insertId,
-      tipo: 'amistad',
-      mensaje: 'Nueva solicitud de amistad',
-      leido: 0,
-    });
+    getIO()
+      .to(String(id_destinatario))
+      .emit('notificacion', {
+        id: result.insertId,
+        tipo: 'amistad',
+        mensaje,
+        url: `/solicitud/${solRes.insertId}`,
+        leido: 0,
+      });
 
     res.status(201).json({ mensaje: 'Solicitud enviada' });
   } catch (error) {
