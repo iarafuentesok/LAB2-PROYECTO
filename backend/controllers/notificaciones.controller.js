@@ -4,7 +4,7 @@ export const obtenerNotificaciones = async (req, res) => {
   try {
     const id_usuario = req.params.idUsuario;
     const [rows] = await db.query(
-      'SELECT id, tipo, mensaje, url, leido, fecha FROM notificaciones WHERE id_usuario = ? ORDER BY fecha DESC',
+      'SELECT id, tipo, mensaje, url, leido, fecha FROM notificaciones WHERE id_usuario = ? AND leido = FALSE ORDER BY fecha DESC',
       [id_usuario]
     );
     res.json(rows);

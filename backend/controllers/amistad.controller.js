@@ -79,6 +79,12 @@ export const responderSolicitud = async (req, res) => {
       [estado, id_solicitud]
     );
 
+    // Marcar la notificación original como leída para que desaparezca de la vista del destinatario
+    await db.query('UPDATE notificaciones SET leido = TRUE WHERE id_usuario = ? AND url = ?', [
+      solicitud.id_destinatario,
+      `/solicitud/${id_solicitud}`,
+    ]);
+
     if (acepta) {
       // Registrar seguimiento del remitente hacia el destinatario
       await db.query('INSERT INTO amistades (id_usuario, id_amigo) VALUES (?, ?)', [

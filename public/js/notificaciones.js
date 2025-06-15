@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const datos = await res.json();
     lista.innerHTML = '';
     datos.forEach((n) => mostrarNotificacion(n));
-    contador = datos.filter((n) => !n.leido).length;
+    contador = datos.length;
     if (window.actualizarNotifCounter) {
       window.actualizarNotifCounter(contador);
     }
