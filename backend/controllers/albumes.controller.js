@@ -70,6 +70,21 @@ export const subirImagen = async (req, res) => {
     const { albumId } = req.params;
     const { descripcion, visibilidad, destinatarios = [], id_usuario, tags = [] } = req.body;
 
+    // Asegurar que los destinatarios siempre sean un arreglo
+    let destinatariosList = destinatarios;
+    if (typeof destinatariosList === 'string') {
+      try {
+        destinatariosList = JSON.parse(destinatariosList);
+      } catch {
+        destinatariosList = destinatariosList
+          .split(',')
+          .map((d) => d.trim())
+          .filter((d) => d);
+      }
+    } else if (!Array.isArray(destinatariosList)) {
+      destinatariosList = destinatariosList ? [destinatariosList] : [];
+    }
+
     const archivo = req.file;
     if (!archivo) {
       return res.status(400).json({ mensaje: 'No se recibió la imagen.' });
@@ -106,8 +121,8 @@ export const subirImagen = async (req, res) => {
     }
 
     // Compartir imagen si es compartida
-    if (visibilidad === 'compartida' && Array.isArray(destinatarios)) {
-      const values = destinatarios.map((uid) => [result.insertId, uid]);
+    if (visibilidad === 'compartida' && Array.isArray(destinatariosList)) {
+      const values = destinatariosList.map((uid) => [result.insertId, uid]);
       if (values.length > 0) {
         await db.query('INSERT INTO imagenes_compartidas (id_imagen, id_usuario) VALUES ?', [
           values,
