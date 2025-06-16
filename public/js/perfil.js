@@ -159,8 +159,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    document.getElementById('cerrarLightbox').addEventListener('click', () => {
-      document.getElementById('lightbox').style.display = 'none';
+    const lightbox = document.getElementById('lightbox');
+    const cerrarBtn = document.getElementById('cerrarLightbox');
+
+    function cerrarLightbox() {
+      lightbox.style.display = 'none';
+    }
+
+    cerrarBtn.addEventListener('click', cerrarLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) cerrarLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') cerrarLightbox();
     });
 
     document.querySelectorAll('.imagenes-album img').forEach((img) => {

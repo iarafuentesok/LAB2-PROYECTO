@@ -23,6 +23,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mensajeImagen = document.getElementById('mensajeImagen');
 
   let albumes = [];
+  let amigos = [];
+
+  async function cargarAmigos() {
+    try {
+      const res = await fetch(`/api/amistad/amigos/${usuario.id}`);
+      amigos = res.ok ? await res.json() : [];
+    } catch (err) {
+      console.error('Error al cargar amigos', err);
+      amigos = [];
+    }
+  }
 
   async function cargarAlbumes() {
     try {
@@ -36,6 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function renderAlbumes() {
     listaAlbumes.innerHTML = '';
+    const opcionesAmigos = amigos
+      .map((a) => `<option value="${a.id}">${a.nombre}</option>`)
+      .join('');
+
     albumes.forEach((album) => {
       const div = document.createElement('div');
       div.classList.add('album');
@@ -56,9 +71,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           <select name="visibilidad">
             <option value="publica">Pública</option>
             <option value="privada">Solo amigos</option>
-            <option value="compartida">Seleccionar amigos (IDs separados por coma)</option>
+            <option value="compartida">Seleccionar amigos</option>
           </select><br>
-          <input type="text" name="destinatarios" placeholder="1,2,3" style="display:none"><br>
+          <select name="destinatarios" multiple style="display:none">
+            ${opcionesAmigos}
+          </select><br>
           <button type="submit">Subir imagen</button>
         </form>
       `;
@@ -67,8 +84,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.querySelectorAll('select[name="visibilidad"]').forEach((sel) => {
       sel.addEventListener('change', () => {
-        const input = sel.parentElement.querySelector('input[name="destinatarios"]');
-        input.style.display = sel.value === 'compartida' ? 'block' : 'none';
+        const destSel = sel.parentElement.querySelector('select[name="destinatarios"]');
+        if (destSel) destSel.style.display = sel.value === 'compartida' ? 'block' : 'none';
       });
     });
 
@@ -83,10 +100,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         formData.append('descripcion', form.descripcion.value);
         formData.append('visibilidad', form.visibilidad.value);
         formData.append('id_usuario', usuario.id);
-        if (form.visibilidad.value === 'compartida' && form.destinatarios.value.trim()) {
-          form.destinatarios.value.split(',').forEach((id) => {
-            formData.append('destinatarios', id.trim());
-          });
+        if (form.visibilidad.value === 'compartida') {
+          const sel = form.querySelector('select[name="destinatarios"]');
+          const seleccionados = Array.from(sel.selectedOptions).map((o) => o.value);
+          seleccionados.forEach((id) => formData.append('destinatarios', id));
         }
         const resp = await fetch(`/api/albumes/imagen/${albumId}`, {
           method: 'POST',
@@ -135,8 +152,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    document.getElementById('cerrarLightbox').addEventListener('click', () => {
-      document.getElementById('lightbox').style.display = 'none';
+    const lightbox = document.getElementById('lightbox');
+    const cerrarBtn = document.getElementById('cerrarLightbox');
+
+    function cerrarLightbox() {
+      lightbox.style.display = 'none';
+    }
+
+    cerrarBtn.addEventListener('click', cerrarLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) cerrarLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') cerrarLightbox();
     });
 
     document.querySelectorAll('.imagenes-album img').forEach((img) => {
@@ -170,5 +198,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => (mensajeAlbum.textContent = ''), 3000);
   });
 
+  await cargarAmigos();
   await cargarAlbumes();
 });
