@@ -106,8 +106,8 @@ export const responderSolicitud = async (req, res) => {
     }
 
     const mensaje = acepta
-      ? 'Tu solicitud de amistad fue aceptada'
-      : 'Tu solicitud de amistad fue rechazada';
+      ? `✅ ${nombreDestinatario || 'El usuario'} aceptó tu solicitud de amistad`
+      : `❌ ${nombreDestinatario || 'El usuario'} rechazó tu solicitud de amistad`;
 
     const [notifRes] = await db.query(
       "INSERT INTO notificaciones (id_usuario, tipo, mensaje) VALUES (?, 'amistad', ?)",
@@ -162,5 +162,31 @@ export const obtenerAmigos = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener amigos' });
+  }
+};
+
+// Eliminar a un amigo
+export const eliminarAmigo = async (req, res) => {
+  try {
+    const { idUsuario, idAmigo } = req.params;
+    const [result] = await db.query('DELETE FROM amistades WHERE id_usuario = ? AND id_amigo = ?', [
+      idUsuario,
+      idAmigo,
+    ]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ mensaje: 'Amistad no encontrada' });
+    }
+    // Eliminar también el álbum creado con el contenido del amigo
+    const [[amigo]] = await db.query('SELECT nombre FROM usuarios WHERE id = ? LIMIT 1', [idAmigo]);
+    if (amigo) {
+      await db.query('DELETE FROM albumes WHERE id_usuario = ? AND titulo = ?', [
+        idUsuario,
+        amigo.nombre,
+      ]);
+    }
+    res.json({ mensaje: 'Amigo eliminado correctamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al eliminar amigo' });
   }
 };

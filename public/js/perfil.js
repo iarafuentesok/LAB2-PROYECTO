@@ -11,6 +11,7 @@ async function obtenerUsuario() {
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const perfilId = params.get('usuario_id');
+  const imagenParam = params.get('img');
   const visitante = await obtenerUsuario();
 
   if (!visitante) {
@@ -99,12 +100,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const div = document.createElement('div');
         div.classList.add('album');
 
-        const imagenesHTML = (album.imagenes || [])
-          .filter((img) => puedeVerImagen(img, idVisitante, esMiPerfil))
+        const imagenesVisibles = (album.imagenes || []).filter((img) =>
+          puedeVerImagen(img, idVisitante, esMiPerfil)
+        );
+
+        const imagenesHTML = imagenesVisibles
           .map(
             (img) => `
               <div class="imagen-album">
-                                <img src="${img.url_archivo}" data-id="${img.id}" alt="${img.descripcion || ''}">
+                 <img src="${img.url_archivo}" data-id="${img.id}" alt="${img.descripcion || ''}">
                 ${img.descripcion ? `<p>${img.descripcion}</p>` : ''}
               </div>
             `
@@ -113,9 +117,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         div.innerHTML = `
           <h4>${album.titulo}</h4>
-          <p>${imagenesHTML.length} ${
-            imagenesHTML.length === 1 ? 'imagen' : 'imágenes'
-          } visibles</p>
           <div class="imagenes-album">${imagenesHTML}</div>
         `;
 
@@ -172,6 +173,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         await cargarComentarios(imagenActual);
       });
     });
+
+    if (imagenParam) {
+      const imgEl = document.querySelector(`img[data-id="${imagenParam}"]`);
+      if (imgEl) {
+        imgEl.click();
+      } else {
+        try {
+          const resImg = await fetch(`/api/imagenes/${imagenParam}`);
+          if (resImg.ok) {
+            const imgData = await resImg.json();
+            if (puedeVerImagen(imgData, idVisitante, esMiPerfil)) {
+              imagenActual = imgData.id;
+              document.getElementById('lightboxImagen').src = imgData.url_archivo;
+              document.getElementById('lightboxTitulo').textContent = imgData.descripcion || '';
+              document.getElementById('lightboxDescripcion').textContent = '';
+              document.getElementById('lightbox').style.display = 'flex';
+              await cargarComentarios(imagenActual);
+            }
+          }
+        } catch (e) {
+          console.error('Error al cargar imagen por parámetro', e);
+        }
+      }
+    }
 
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {

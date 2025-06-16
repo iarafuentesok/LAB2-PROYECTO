@@ -146,6 +146,16 @@ nav a.activo {
   transform: translateY(-2px);
 }
 
+.btn.danger {
+  background-color: #e74c3c;
+  color: var(--color-light);
+}
+
+.btn.danger:hover {
+  background-color: #c0392b;
+}
+
+
 /* ========== FOOTER ========== */
 footer {
   background-color: var(--color-dark);

@@ -30,21 +30,20 @@ export const agregarComentario = async (req, res) => {
 
         const extracto = comentario.length > 20 ? `${comentario.slice(0, 20)}...` : comentario;
         const mensaje = `${comentarista} comentó: ${extracto}`;
+        const url = `/perfil.html?usuario_id=${autor}&img=${id_imagen}`;
         const [resNotif] = await db.query(
           "INSERT INTO notificaciones (id_usuario, tipo, mensaje, url) VALUES (?, 'comentario', ?, ?)",
-          [autor, mensaje, `/imagen/${id_imagen}`]
+          [autor, mensaje, url]
         );
 
         // Notificación en tiempo real
-        getIO()
-          .to(String(autor))
-          .emit('notificacion', {
-            id: resNotif.insertId,
-            tipo: 'comentario',
-            mensaje,
-            url: `/imagen/${id_imagen}`,
-            leido: 0,
-          });
+        getIO().to(String(autor)).emit('notificacion', {
+          id: resNotif.insertId,
+          tipo: 'comentario',
+          mensaje,
+          url,
+          leido: 0,
+        });
       }
     }
 

@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       imagenesAmigos.innerHTML = '';
       for (const amigo of amigos) {
         const li = document.createElement('li');
-        li.innerHTML = `<a href="perfil.html?usuario_id=${amigo.id}">${amigo.nombre}</a>`;
+        li.innerHTML = `<a href="perfil.html?usuario_id=${amigo.id}">${amigo.nombre}</a> <button class="eliminar-amigo btn danger" data-id="${amigo.id}">Eliminar</button>`;
         listaAmigos.appendChild(li);
 
         const resImg = await fetch(`/api/imagenes/usuario/${amigo.id}`);
@@ -117,6 +117,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     e.target.disabled = true;
     e.target.textContent = 'Enviada';
+  });
+
+  listaAmigos.addEventListener('click', async (e) => {
+    if (!e.target.classList.contains('eliminar-amigo')) return;
+    const id = e.target.dataset.id;
+    await fetch(`/api/amistad/${usuario.id}/${id}`, { method: 'DELETE' });
+    cargarAmigos();
   });
 
   cargarSolicitudes();
